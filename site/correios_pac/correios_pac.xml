@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<install version="1.5" type="plugin" group="vmshipment" >
+    <name>Correios PAC</name>
+    <creationDate>DECEMBER 2011</creationDate>
+    <author>FÁBIO PAIVA</author>
+    <authorUrl>fabio@paiva.info</authorUrl>
+    <copyright>Copyright (C) 2011-2011 Fábio Paiva. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
+    <version>1.0B</version>
+    <description>Plugin Virtuemart Correios PAC</description>    
+    <files>
+	<filename plugin="correios_pac">correios_pac.php</filename>	
+    </files>
+    <params addpath="/administrator/components/com_virtuemart/elements">        
+	<param type="vmjpluginwarning" />
+        <param	name="shipment_logos" type="vmfiles" label="Logo PAC"
+             	description="Selecione a Logo a ser usada para o método PAC"
+             	directory="/images/stories/virtuemart/shipment"
+             	default="default" hide_default="1" hide_none="1"
+             	stripext="0"   exclude="^_" />
+	
+	<param type="spacer" default="Configuração módulo PAC" level="level1" />	
+        <param name="ValorDeclara_SN" type="list" default="1" label="Declarar valor (recomendado)">
+            <option value="1">Sim</option>
+            <option value="0">Não</option>
+        </param>
+        <param name="MaoPropria_SN" type="list" default="0" label="Mão Própria">
+            <option value="1">Sim</option>
+            <option value="0">Não</option>
+        </param>
+        
+        <param name="AvisoReceb_SN" type="list" default="0" label="Aviso de recebimento">
+            <option value="1">Sim</option>
+            <option value="0">Não</option>
+        </param>
+        
+        
+        <param name="Formatos_SN" type="list" default="0" label="Formato">
+            <option value="1">Caixa/Pacote</option>
+            <option value="2">Rolo Prisma</option>
+        </param>
+        
+        <param name="Comprimento_SN" type="text" size="10" default="16" label="Comprimento Médio Pacote (Cm)" description=""/>
+        
+        <param name="Larg_Diam_SN" type="text" size="10" default="11" label="Largura/Diâmetro médio pacotes(Cm)" description=""/>
+        
+        <param name="Altura_SN" type="text" size="10" default="2" label="Altura média pacotes(Cm)" description=""/>
+        
+        <param type="spacer" default="Configuração de faixa de cep" level="level2" />
+        
+        <param name="UsoFaixa_SN" type="list" default="2" label="Faixa de CEPs">
+            <option value="0">Aplicar nesta faixa de CEPs</option>
+            <option value="1">Ignorar nesta faixa de CEPs</option>
+            <option value="2">Não usar faixa de CEP</option>
+        </param>
+        
+        
+        <param name="CepStart_SN" type="text" size="10" default="" label="CEP Inicial(somente números)" description=""/>
+        
+        <param name="CepEnd_SN" type="text" size="10" default="" label="CEP Final(somente números)" description=""/>
+        
+        <param type="spacer" default="Tratamento de falhas no site dos correios" level="level3" />        
+        
+        <param name="ContFalha_SN" type="list" default="0" label="Permite continuar em caso de falha">
+            <option value="0">Não</option>
+            <option value="1">Sim</option>
+        </param>
+        
+        <param name="UsaSC_SN" type="list" default="1" label='Usa "SEDEX a Cobrar" em caso de falha'>
+            <option value="0">Não</option>
+            <option value="1">Sim</option>
+        </param>        
+        
+        <param name="Msgfalha_SN" type="text" size="60" default="" label="Mensagem a exibir no caso de falha" description="" maxlength="60"/>
+        
+        <param type="spacer" default="Outras configurações" level="level4" />        
+        
+        <param name="Handling_Fee_SN" type="text" size="10" default="0" label="Taxa de empacotamento e manuseio" description=""/>
+        
+        <param name="SEDEX_TAX_CLASS" type="list" default="0" label='Classe de taxação'>
+            <option value="0">0 - Nenhum</option>
+            <option value="2">2 - 9.75%</option>
+        </param>        
+<param type="spacer" default="&lt;br/&gt;&lt;a target='_blank' href='https://pagseguro.uol.com.br/security/webpagamentos/webdoacao.aspx?email_cobranca=fabio@paiva.info&amp;moeda=BRL'&gt;&lt;img src='https://pagseguro.uol.com.br/Security/Imagens/FacaSuaDoacao.gif' /&gt;&lt;/a&gt;" level="level4" />
+    </params>
+
+    <fieldset addpath="/administrator/components/com_virtuemart/elements">
+	<field type="vmjpluginwarning" />
+        <field	name="shipment_logos" type="vmfiles" label="VMSHIPMENT_WEIGHT_COUNTRIES_LOGOS"
+             	description="VMSHIPMENT_WEIGHT_COUNTRIES_LOGOS_DESC"
+             	directory="/images/stories/virtuemart/shipment"
+             	default="default" hide_default="1" hide_none="1"
+             	stripext="0"   exclude="^_" />
+	
+	<field type="spacer" default="VMSHIPMENT_WEIGHT_COUNTRIES_PLUGIN" level="level1" />
+	<field name="ValorDeclara_SN" type="list" default="1" label="Declarar valor (recomendado)"/>
+	<field name="MaoPropria_SN" type="list" default="0" label="Mão Própria"/>
+        <field name="AvisoReceb_SN" type="list" default="0" label="Aviso de recebimento"/>
+        <field name="Formatos_SN" type="list" default="0" label="Formato"/>
+        <field name="Comprimento_SN" type="text" size="10" default="16" label="Comprimento Médio Pacote (Cm)" description=""/>
+        <field name="Larg_Diam_SN" type="text" size="10" default="11" label="Largura/Diâmetro médio pacotes(Cm)" description=""/>
+        <field name="Altura_SN" type="text" size="10" default="2" label="Altura média pacotes(Cm)" description=""/>
+        <field type="spacer" default="Configuração de faixa de cep" level="level2" />
+        <field name="UsoFaixa_SN" type="list" default="2" label="Faixa de CEPs"/>
+        <field name="CepStart_SN" type="text" size="10" default="" label="CEP Inicial(somente números)" description=""/>
+        <field name="CepEnd_SN" type="text" size="10" default="" label="CEP Final(somente números)" description=""/>
+        <field type="spacer" default="Tratamento de falhas no site dos correios" level="level3" />
+        <field name="ContFalha_SN" type="list" default="0" label="Permite continuar em caso de falha"/>
+        <field name="UsaSC_SN" type="list" default="1" label='Usa "SEDEX a Cobrar" em caso de falha'/>
+        <field name="Msgfalha_SN" type="text" size="60" default="" label="Mensagem a exibir no caso de falha" description="" maxlength="60"/>
+        <field type="spacer" default="Outras configurações" level="level4" />
+        <field name="Handling_Fee_SN" type="text" size="10" default="0" label="Taxa de empacotamento e manuseio" description=""/>
+        <field name="SEDEX_TAX_CLASS" type="list" default="0" label='Classe de taxação'/>
+
+
+    </fieldset>
+</install>
