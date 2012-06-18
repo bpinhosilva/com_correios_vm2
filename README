@@ -1,1 +1,5 @@
 Componente dos correios VirtueMart 2
+- Plugin que efetua o cálculo do frete usando o webservice dos Correios.
+- Serviços integrados:
+-- PAC
+-- SEDEX
