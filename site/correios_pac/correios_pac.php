@@ -64,7 +64,7 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
 
     /**
      * Create the table for this plugin if it does not yet exist.
-     * @author Val√©rie Isaksen
+     * @author Val√É¬©rie Isaksen
      */
     protected function getVmPluginCreateTableSQL() {
 
@@ -93,7 +93,7 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
      *
      * @param integer $order_number The order Number
      * @return mixed Null for shipments that aren't active, text (HTML) otherwise
-     * @author Val√©rie Isaksen
+     * @author Val√É¬©rie Isaksen
      * @author Max Milbers
      */
     public function plgVmOnShowOrderFEShipment($virtuemart_order_id, $virtuemart_shipmentmethod_id, &$shipment_name) {
@@ -212,20 +212,20 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
 
 
         //Define medidas e formato da embalagem
-        //Usei os valores mÌnimos (16x11x2 Cm) para todas as medidas a seguir:
-        //Comprimento mÈdio dos pacotes utilizados para envio pelos Correios(Cm)
+        //Usei os valores m√≠nimos (16x11x2 Cm) para todas as medidas a seguir:
+        //Comprimento m√©dio dos pacotes utilizados para envio pelos Correios(Cm)
         $this->Order_Length = $method->Comprimento_SN;
         if ($this->Order_Length < 16) {
             $this->Order_Length = "16";
         }
 
-        //Largura/Di‚metro mÈdio dos pacotes utilizados para envio pelos Correios(Cm)
+        //Largura/Di√¢metro m√©dio dos pacotes utilizados para envio pelos Correios(Cm)
         $this->Order_Width = $method->Larg_Diam_SN;
         if ($this->Order_Width < 11) {
             $this->Order_Width = "11";
         }
 
-        //Altura mÈdia dos pacotes utilizados para envio pelos Correios(Cm)
+        //Altura m√©dia dos pacotes utilizados para envio pelos Correios(Cm)
         $this->Order_Height = $method->Altura_SN;
         if ($this->Order_Height < 2) {
             $this->Order_Height = "2";
@@ -234,7 +234,7 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
         //Tipo de embrulho dos Correios
         $this->Order_Formatos = $method->Formatos_SN;
 
-        // Define se o formato È rolo ou pacote
+        // Define se o formato √© rolo ou pacote
         if ($this->Order_Formatos == 1) {
             $this->Opt1 = "&nVlLargura=";
             $this->Opt2 = "&nVlAltura=" . $this->Order_Height;
@@ -244,11 +244,11 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
         }
 
 
-        //Taxa de empacotamento e manuseio, e ser· acrescida aos custos de envio retornados pelos Correios
+        //Taxa de empacotamento e manuseio, e ser√° acrescida aos custos de envio retornados pelos Correios
         $this->Order_Handling_Fee = $method->Handling_Fee_SN;
         $this->Order_Handling_Fee = floatval(str_replace(",", ".", $this->Order_Handling_Fee));
 
-        //ServiÁo M„o PrÛpria dos Correios
+        //Servi√ßo M√£o Pr√≥pria dos Correios
         $this->Order_MaoPropria = $method->MaoPropria_SN;
 
         //Aviso de Recebimento dos Correios
@@ -314,38 +314,47 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
 
     protected function checkConditions($cart, $method, $cart_prices) {
 
-        //verificar se o usu·rio est· logado        
+        //verificar se o usu√°rio est√° logado        
 
-        $user = & JFactory::getUser();
+        //$user = & JFactory::getUser();
+        //tirei a checagem de usuario logado e o endere√ßo pode ser tanto BT quanto ST
+        $address = (($cart->ST == 0) ? $cart->BT : $cart->ST);
+        
         $this->logado = false;
         $mainframe = JFactory::getApplication();
         $cepOrigem = $this->cepOrigem = ereg_replace('[^0-9]', '', $this->vendedor("zip", $method->virtuemart_vendor_id));
-        $cepDestino = $this->cepDestino = ereg_replace('[^0-9]', '', $cart->ST["zip"] ?
+        // inseri o cep destino logo aqui
+        $cepDestino = $this->cepDestino = ereg_replace('[^0-9]', '', $address["zip"]);
+        /*$cepDestino = $this->cepDestino = ereg_replace('[^0-9]', '', $cart->ST["zip"] ?
                         $cart->ST["zip"] :
                         $cart->cep_simulacao
+                        
         );
+        */
 
 
-        if ($user->id != 0) { // se estiver logado faz as verificaÁıes
-            $this->logado = true;
-            //verificar se o usu·rio preencheu o cep no cadastro do endereÁo de entrega
-            if (!is_array($cart->ST)) {
-                $this->redireciona('index.php?option=com_virtuemart&view=user&task=editaddresscheckout&addrtype=ST', "Escolha o local de entrega ou cadastre um novo endereÁo");
+	// lembrar de repor } na linha 396
+	// tirei necessidade de logado para verificacoes.
+        // if ($user->id != 0) { // se estiver logado faz as verifica√ß√µes
+            //$this->logado = true;
+            //verificar se o usu√°rio preencheu o cep no cadastro do endere√ßo de entrega
+            if (!is_array($address)) {
+                $this->redireciona('index.php?option=com_virtuemart&view=user&task=editaddresscheckout&addrtype=BT', "Escolha o local de entrega ou cadastre um novo endere√ßo");
                 return false;
             }
 
-            //verificar se o zip est· correto
+            //verificar se o zip est√° correto
 
-            if (empty($cart->ST["zip"])) {
-                $this->redireciona('index.php?option=com_virtuemart&view=user&task=editaddresscheckout&addrtype=ST', "Preencha corretamente o endere&ccedil;o de entrega");
+            if (empty($address)) {
+                $this->redireciona('index.php?option=com_virtuemart&view=user&task=editaddresscheckout&addrtype=BT', "Preencha corretamente o endere&ccedil;o de entrega");
                 return false;
             }
-            //verificar se est· no Brasil
-            if ($cart->ST["virtuemart_country_id"] != 30) {
+            //verificar se est√° no Brasil
+            if ($address["virtuemart_country_id"] != 30) {
                 $mainframe->enqueueMessage('PAC erro: Somente para entregas no Brasil');
                 return false;
             }
-            //verificar o valor m·ximo
+            //verificar o valor m√°ximo
             if ($cart_prices->billTotal > 10000) {
                 $mainframe->enqueueMessage("PAC erro: Excede o valor m&aacute;ximo para uso do servi&ccedil;o. (R$ 10.000,00)");
                 return false;
@@ -368,7 +377,7 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
               Aplica a faixa de CEPs
               ================================== */
 
-            //Pega os CEPs da faixa de CEPs e remove sÌmbolos indesejados (ex. 96840150)
+            //Pega os CEPs da faixa de CEPs e remove s√≠mbolos indesejados (ex. 96840150)
             $CepStart = ereg_replace('[^0-9]', '', $method->CepStart_SN);
             $CepEnd = ereg_replace('[^0-9]', '', $method->CepEnd_SN);
 
@@ -386,14 +395,14 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
                 }
             }
 
-            //verifica se o carrinho est· vazio (se a compra for efetuado o carrinho estar· vazio)
-            //deve fazer essa verificaÁ„o para n„o enviar msg de aviso na tela de confirmaÁ„o do pedido
+            //verifica se o carrinho est√° vazio (se a compra for efetuado o carrinho estar√° vazio)
+            //deve fazer essa verifica√ß√£o para n√£o enviar msg de aviso na tela de confirma√ß√£o do pedido
             if (!count($cart->products))
                 return false;
-        }
+         // }
 
-        // Verifica se o peso est· dentro dos limites
-        //n„o precisa estar logado
+        // Verifica se o peso est√° dentro dos limites
+        //n√£o precisa estar logado
         $this->Order_WeightKG = $this->peso_total($cart);
 
         if ($this->Order_WeightKG > 30) {
@@ -475,7 +484,7 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
      * Check the conditions on Zip code
      * @param int $zip : zip code
      * @param $params paremters for this specific shiper
-     * @author Val√©rie Isaksen
+     * @author Val√É¬©rie Isaksen
      * @return string if Zip condition is ok or not
      */
     private function _zipCond($zip, $method) {
@@ -497,7 +506,7 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
      * Create the table for this plugin if it does not yet exist.
      * This functions checks if the called plugin is active one.
      * When yes it is calling the standard method to create the tables
-     * @author Val√©rie Isaksen
+     * @author Val√É¬©rie Isaksen
      *
      */
     function plgVmOnStoreInstallShipmentPluginTable($jplugin_id) {
@@ -509,7 +518,7 @@ class plgVmShipmentCorreios_PAC extends vmPSPlugin {
      * additional payment info in the cart.
      *
      * @author Max Milbers
-     * @author Val√©rie isaksen
+     * @author Val√É¬©rie isaksen
      *
      * @param VirtueMartCart $cart: the actual cart
      * @return null if the payment was not selected, true if the data is valid, error message if the data is not vlaid
