@@ -1,5 +1,6 @@
 <?php
 
+
 if (!defined('_JEXEC'))
     die('Direct Access to ' . basename(__FILE__) . ' is not allowed.');
 
@@ -21,6 +22,16 @@ if (!defined('_JEXEC'))
  * @author Valerie Isaksen
  *
  */
+ 
+ /**
+	Alteração pluging para VirtueMart versão 2.0
+	Data: 19/06/2012
+	Autor: Bruno Pinho
+	bpinhosilva@gmail.com
+	Insercao do BT no metodo checkConditions() para permitir que o endereco de fatura 
+	seja tambem usado para calculo do frete.
+*/
+ 
 if (!class_exists('vmPSPlugin'))
     require(JPATH_VM_PLUGINS . DS . 'vmpsplugin.php');
 
