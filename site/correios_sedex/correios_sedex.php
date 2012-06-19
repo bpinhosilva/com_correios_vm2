@@ -19,6 +19,8 @@ if (!defined('_JEXEC'))
  *
  * http://virtuemart.org
  * @author Valerie Isaksen
+ * Bruno Pinho
+ * Email: bpinhosilva@gmail.com
  *
  */
 if (!class_exists('vmPSPlugin'))
@@ -207,20 +209,20 @@ class plgVmShipmentCorreios_Sedex extends vmPSPlugin {
 
     function busca_preco_site_correios($cart, $method, $cart_prices) {
         //Define medidas e formato da embalagem
-        //Usei os valores mínimos (16x11x2 Cm) para todas as medidas a seguir:
-        //Comprimento médio dos pacotes utilizados para envio pelos Correios(Cm)
+        //Usei os valores minimos (16x11x2 Cm) para todas as medidas a seguir:
+        //Comprimento medio dos pacotes utilizados para envio pelos Correios(Cm)
         $this->Order_Length = $method->Comprimento_SN;
         if ($this->Order_Length < 16) {
             $this->Order_Length = "16";
         }
 
-        //Largura/Diâmetro médio dos pacotes utilizados para envio pelos Correios(Cm)
+        //Largura/Diametro medio dos pacotes utilizados para envio pelos Correios(Cm)
         $this->Order_Width = $method->Larg_Diam_SN;
         if ($this->Order_Width < 11) {
             $this->Order_Width = "11";
         }
 
-        //Altura média dos pacotes utilizados para envio pelos Correios(Cm)
+        //Altura media dos pacotes utilizados para envio pelos Correios(Cm)
         $this->Order_Height = $method->Altura_SN;
         if ($this->Order_Height < 2) {
             $this->Order_Height = "2";
@@ -229,7 +231,7 @@ class plgVmShipmentCorreios_Sedex extends vmPSPlugin {
         //Tipo de embrulho dos Correios
         $this->Order_Formatos = $method->Formatos_SN;
 
-        // Define se o formato é rolo ou pacote
+        // Define se o formato eh rolo ou pacote
         if ($this->Order_Formatos == 1) {
             $this->Opt1 = "&nVlLargura=";
             $this->Opt2 = "&nVlAltura=" . $this->Order_Height;
@@ -239,11 +241,11 @@ class plgVmShipmentCorreios_Sedex extends vmPSPlugin {
         }
 
 
-        //Taxa de empacotamento e manuseio, e será acrescida aos custos de envio retornados pelos Correios
+        //Taxa de empacotamento e manuseio, e sera acrescida aos custos de envio retornados pelos Correios
         $this->Order_Handling_Fee = $method->Handling_Fee_SN;
         $this->Order_Handling_Fee = floatval(str_replace(",", ".", $this->Order_Handling_Fee));
 
-        //Serviço Mão Própria dos Correios
+        //Servico Mao Propria dos Correios
         $this->Order_MaoPropria = $method->MaoPropria_SN;
 
         //Aviso de Recebimento dos Correios
@@ -307,33 +309,41 @@ class plgVmShipmentCorreios_Sedex extends vmPSPlugin {
     }
 
     protected function checkConditions($cart, $method, $cart_prices) {
-        //verificar se o usuário está logado         
-        $user = & JFactory::getUser();
+        //verificar se o usuario esta logado         
+        //$user = & JFactory::getUser();
         $this->logado = false;
+
+	// verifica o endereco da fatura tambem
+	$address = (($cart->ST == 0) ? $cart->BT : $cart->ST);
+
         $mainframe = JFactory::getApplication();
         $cepOrigem = $this->cepOrigem = ereg_replace('[^0-9]', '', $this->vendedor("zip", $method->virtuemart_vendor_id));
-        $cepDestino = $this->cepDestino = ereg_replace('[^0-9]', '', $cart->ST["zip"] ?
+        
+	// insiro o cep de destino aqui
+	$cepDestino = $this->cepDestino = ereg_replace('[^0-9]', '', $address["zip"]);
+
+/*$cepDestino = $this->cepDestino = ereg_replace('[^0-9]', '', $cart->ST["zip"] ?
                         $cart->ST["zip"] :
                         $cart->cep_simulacao
-        );
+        );*/
 
-
-        if ($user->id != 0) { // se estiver logado faz as verificações
+// lembrar do } em cima da verificacao do carrinho vazio
+  //      if ($user->id != 0) { // se estiver logado faz as verificacoes
             $this->logado = true;
-            //verificar se o usuário preencheu o cep no cadastro do endereço de entrega
-            if (!is_array($cart->ST)) {
-                $this->redireciona('index.php?option=com_virtuemart&view=user&task=editaddresscheckout&addrtype=ST', "Escolha o local de entrega ou cadastre um novo endereço");
+            //verificar se o usuario preencheu o cep no cadastro do endereco de entrega
+            if (!is_array($address)) {
+                $this->redireciona('index.php?option=com_virtuemart&view=user&task=editaddresscheckout&addrtype=BT', "Escolha o local de entrega ou cadastre um novo endere&ccedil;o");
                 return false;
             }
 
-            //verificar se o zip está correto
+            //verificar se o zip esta correto
 
-            if (empty($cart->ST["zip"])) {
-                $this->redireciona('index.php?option=com_virtuemart&view=user&task=editaddresscheckout&addrtype=ST', "Preencha corretamente o endere&ccedil;o de entrega");
+            if (empty($address)) {
+                $this->redireciona('index.php?option=com_virtuemart&view=user&task=editaddresscheckout&addrtype=BT', "Preencha corretamente o endere&ccedil;o de entrega");
                 return false;
             }
-            //verificar se está no Brasil
-            if ($cart->ST["virtuemart_country_id"] != 30) {
+            //verificar se esta no Brasil
+            if ($address["virtuemart_country_id"] != 30) {
                 $mainframe->enqueueMessage('Sedex erro: Somente para entregas no Brasil');
                 return false;
             }
@@ -378,14 +388,14 @@ class plgVmShipmentCorreios_Sedex extends vmPSPlugin {
                 }
             }
 
-            //verifica se o carrinho está vazio (se a compra for efetuado o carrinho estará vazio)
-            //deve fazer essa verificação para não enviar msg de aviso na tela de confirmação do pedido
+            //verifica se o carrinho esta vazio (se a compra for efetuado o carrinho estará vazio)
+            //deve fazer essa verificacao para nao enviar msg de aviso na tela de confirmação do pedido
             if (!count($cart->products))
                 return false;
-        }
+        // }
 
         // Verifica se o peso está dentro dos limites
-        //não precisa estar logado
+        //nao precisa estar logado
         $this->Order_WeightKG = $this->peso_total($cart);
 
         if ($this->Order_WeightKG > 30) {
